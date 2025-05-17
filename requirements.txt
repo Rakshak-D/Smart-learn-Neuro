@@ -1,12 +1,13 @@
-Django
-djangorestframework
-psycopg2-binary
-gtts
-spacy  # Let pip choose a compatible version
-tensorflow
-opencv-python
-mediapipe
-django-channels
-requests
-Pillow
-en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.0/en_core_web_sm-3.7.0-py3-none-any.whl
+django==5.1
+djangorestframework==3.15.2
+psycopg2-binary==2.9.9
+python-decouple==3.8
+mediapipe==0.10.14
+googletrans==4.0.0-rc1
+spacy==3.7.6
+tensorflow==2.17.0
+numpy==1.26.4
+opencv-python==4.10.0.84
+gunicorn==21.2.0
+pillow==10.0.0
+django-cors-headers==3.18.0
