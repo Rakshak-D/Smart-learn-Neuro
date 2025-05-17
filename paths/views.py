@@ -3,28 +3,34 @@ from django.contrib.auth.decorators import login_required
 from rest_framework import viewsets
 from .models import LearningPath, UserPath
 from .serializers import LearningPathSerializer, UserPathSerializer
+import json
 
 @login_required
 def path_list(request):
-    # Get all learning paths and user's customized paths
     paths = LearningPath.objects.all()
     user_paths = UserPath.objects.filter(user=request.user)
     return render(request, 'paths/path_list.html', {'paths': paths, 'user_paths': user_paths})
 
 @login_required
 def path_detail(request, pk):
-    # Get the specific learning path or 404
     path = get_object_or_404(LearningPath, pk=pk)
-    # Get or create user's customized path
     user_path, created = UserPath.objects.get_or_create(user=request.user, path=path)
 
     if request.method == 'POST':
-        # Save customized lesson order submitted by user
         customized_order = request.POST.get('customized_order')
-        user_path.customized_order = customized_order
-        user_path.save()
-        return redirect('path_list')
-
+        try:
+            order = json.loads(customized_order) if customized_order else []
+            # Validate lesson IDs
+            valid_ids = path.lessons.values_list('id', flat=True)
+            if all(isinstance(i, int) and i in valid_ids for i in order):
+                user_path.customized_order = order
+                user_path.save()
+                return redirect('path_list')
+            else:
+                messages.error(request, "Invalid lesson IDs in customized order.")
+        except json.JSONDecodeError:
+            messages.error(request, "Invalid JSON format for customized order.")
+    
     return render(request, 'paths/path_detail.html', {'path': path, 'user_path': user_path})
 
 class LearningPathViewSet(viewsets.ModelViewSet):
