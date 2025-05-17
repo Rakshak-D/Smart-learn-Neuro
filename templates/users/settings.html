@@ -1,9 +1,14 @@
 {% extends 'base.html' %}
+{% load static %}
+
 {% block content %}
-<h2>Settings</h2>
-<form method="post"> {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Save Settings</button>
+<h2 id="accessibility-settings">Accessibility Settings</h2>
+<form method="post" aria-labelledby="accessibility-settings" role="form">
+    {% csrf_token %}
+    <label for="dyslexia-font">
+        <input type="checkbox" id="dyslexia-font" name="use_dyslexia_font" {% if accessibility_settings.use_dyslexia_font %}checked{% endif %} tabindex="0">
+        Use Dyslexia-Friendly Font
+    </label>
+    <button type="submit" tabindex="0">Save</button>
 </form>
-<script src="{% static 'js/htmx.min.js' %}"></script>
 {% endblock %}
