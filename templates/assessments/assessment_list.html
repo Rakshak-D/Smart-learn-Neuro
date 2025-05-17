@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Assessments</h2>
-<ul>
+<h2 id="assessment-list">Assessments</h2>
+<ul aria-label="List of assessments">
 {% for assessment in assessments %}
-  <li>{{ assessment.title }}</li>
+  <li><a href="{% url 'assessment_detail' assessment.pk %}" tabindex="0">{{ assessment.title }}</a></li>
 {% endfor %}
 </ul>
 {% endblock %}
