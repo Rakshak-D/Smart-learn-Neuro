@@ -16,14 +16,9 @@ def lesson_list(request):
 
 @login_required
 def lesson_detail(request, pk):
-    """
-    Display details of a specific lesson.
-    Retrieves or creates progress for the current user.
-    Splits content into chunks if user prefers.
-    """
     lesson = get_object_or_404(Lesson, pk=pk)
     progress, created = LessonProgress.objects.get_or_create(user=request.user, lesson=lesson)
-    chunks = lesson.get_chunks()
+    chunks = lesson.get_chunks(request.user)  # Pass user to method
     return render(request, 'lessons/lesson_detail.html', {
         'lesson': lesson,
         'progress': progress,
