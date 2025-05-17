@@ -11,8 +11,8 @@ def accessibility_settings(request):
         # Update use_dyslexia_font based on form submission checkbox
         settings.use_dyslexia_font = 'use_dyslexia_font' in request.POST
         settings.save()
-        # Redirect to user profile or any other page after saving
+        # Redirect to user profile after saving
         return redirect('profile')
     
     # Render the settings form with current settings
-    return render(request, 'accessibility/settings.html', {'settings': settings})
+    return render(request, 'accessibility/settings.html', {'accessibility_settings': settings})
