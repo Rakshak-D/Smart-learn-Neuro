@@ -1,25 +1,12 @@
 {% extends 'base.html' %}
-
-{% block content %}
-<h2>Accessibility Settings</h2>
-<form method="post">
-    {% csrf_token %}
-    <label>
-        <input type="checkbox" name="use_dyslexia_font" {% if settings.use_dyslexia_font %}checked{% endif %}>
-        Use Dyslexia-Friendly Font
-    </label>
-    <button type="submit">Save</button>
-</form>
-{% endblock %}
-{% extends 'base.html' %}
 {% load static %}
 
 {% block content %}
 <h2>Accessibility Settings</h2>
-<form method="post">
+<form method="post" aria-labelledby="accessibility-settings">
     {% csrf_token %}
-    <label>
-        <input type="checkbox" name="use_dyslexia_font" {% if accessibility_settings.use_dyslexia_font %}checked{% endif %}>
+    <label for="dyslexia-font">
+        <input type="checkbox" id="dyslexia-font" name="use_dyslexia_font" {% if accessibility_settings.use_dyslexia_font %}checked{% endif %}>
         Use Dyslexia-Friendly Font
     </label>
     <button type="submit">Save</button>
