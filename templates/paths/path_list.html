@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Learning Paths</h2>
+<ul>
+{% for path in paths %}
+  <li>{{ path.title }}</li>
+{% endfor %}
+</ul>
+{% endblock %}

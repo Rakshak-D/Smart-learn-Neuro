@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>{{ assessment.title }}</h2>
+{% if assessment.audio_file %}
+  <audio controls><source src="{{ assessment.audio_file.url }}" type="audio/mpeg"></audio>
+{% endif %}
+<form method="post"> {% csrf_token %}
+  <textarea id="response_text" name="response_text"></textarea>
+  <button type="button" onclick="startSTT()">Record Response</button>
+  <button type="submit">Submit</button>
+</form>
+<script src="{% static 'js/stt.js' %}"></script>
+{% endblock %}

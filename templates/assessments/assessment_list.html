@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Assessments</h2>
+<ul>
+{% for assessment in assessments %}
+  <li>{{ assessment.title }}</li>
+{% endfor %}
+</ul>
+{% endblock %}

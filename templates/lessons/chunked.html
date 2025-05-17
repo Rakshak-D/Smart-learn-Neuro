@@ -1,0 +1,5 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>{{ lesson.title }} (Chunked View)</h2>
+{% for chunk in chunks %}<p>{{ chunk }}</p>{% endfor %}
+{% endblock %}

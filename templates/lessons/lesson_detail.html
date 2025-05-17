@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>{{ lesson.title }}</h2>
+{% if lesson.image %}<img src="{{ lesson.image.url }}" alt="Lesson Image">{% endif %}
+{% for chunk in chunks %}<p>{{ chunk }}</p>{% endfor %}
+<p>Progress: {{ progress.progress }}%</p>
+<a href="#">Download Lesson</a>
+<script src="{% static 'js/stt.js' %}"></script>
+<script src="{% static 'js/timers.js' %}"></script>
+{% endblock %}

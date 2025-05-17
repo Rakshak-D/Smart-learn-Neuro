@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Welcome, {{ user.username }}!</h2>
+<ul>
+  <li><a href="/users/settings/">Settings</a></li>
+  <li><a href="/lessons/">View Lessons</a></li>
+  <li><a href="/paths/">Learning Paths</a></li>
+</ul>
+{% endblock %}

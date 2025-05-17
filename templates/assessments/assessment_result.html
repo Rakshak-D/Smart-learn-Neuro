@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Results for {{ assessment.title }}</h2>
+<ul>
+{% for response in responses %}
+  <li>{{ response.response_text }}</li>
+{% endfor %}
+</ul>
+{% endblock %}

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartLearnNeuro</title>
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+  {% if accessibility_settings.use_dyslexia_font %}
+  <link rel="stylesheet" href="{% static 'css/dyslexia.css' %}">
+  {% endif %}
+</head>
+<body>
+  {% include 'header.html' %}
+  {% block content %}{% endblock %}
+  {% include 'footer.html' %}
+  <script src="{% static 'js/htmx.min.js' %}"></script>
+</body>
+</html>

@@ -1,22 +1,34 @@
-"""
-URL configuration for SmartLearnNeuro project.
+# SmartLearnNeuro/urls.py
 
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.1/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 
+# Define all the URL routes for the project
 urlpatterns = [
+    # Admin site URL
     path('admin/', admin.site.urls),
+
+    # User authentication and profile management (login, register, settings)
+    path('', include('users.urls')),
+
+    # Lessons module (list, detail, progress)
+    path('lessons/', include('lessons.urls')),
+
+    # Assessments module (quizzes, audio assessments)
+    path('assessments/', include('assessments.urls')),
+
+    # Personalized learning paths
+    path('paths/', include('paths.urls')),
+
+    # Accessibility features (dyslexia font toggle, etc.)
+    path('accessibility/', include('accessibility.urls')),
+
+    # AI-based recommendations or tools
+    path('ai/', include('ai.urls')),
 ]
+
+# Serve media files (uploaded images, audio, etc.) during development
+# In production, you should use a proper media server (like Amazon S3 or Nginx)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

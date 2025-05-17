@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>{{ path.title }}</h2>
+<ul>
+    {% for lesson in path.lessons.all %}
+        <li>{{ lesson.title }}</li>
+    {% endfor %}
+</ul>
+<form method="post">
+    {% csrf_token %}
+    <label for="customized_order">Customize Order (e.g., lesson IDs):</label>
+    <input type="text" id="customized_order" name="customized_order" value="{{ user_path.customized_order|default_if_none:'' }}">
+    <button type="submit">Save Customization</button>
+</form>
+{% endblock %}
