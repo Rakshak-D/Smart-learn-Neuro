@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Lessons</h2>
-<ul>
+<h2 id="lesson-list">Lessons</h2>
+<ul aria-label="List of lessons">
 {% for lesson in lessons %}
-  <li>{{ lesson.title }}</li>
+  <li><a href="{% url 'lesson_detail' lesson.pk %}" tabindex="0">{{ lesson.title }}</a></li>
 {% endfor %}
 </ul>
 {% endblock %}
