@@ -1,8 +1,101 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Register{% endblock %}
+
 {% block content %}
-<h2>Register</h2>
-<form method="post"> {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Register</button>
-</form>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">{{ page_description }}</h3>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="name" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                                <div class="invalid-feedback">Please enter your name.</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                                <div class="invalid-feedback">Please enter a valid email address.</div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="class_level" class="form-label">Class Level</label>
+                                <input type="text" class="form-control" id="class_level" name="class_level" required>
+                                <div class="invalid-feedback">Please enter your class level.</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="learning_condition" class="form-label">Learning Condition</label>
+                                <select class="form-select" id="learning_condition" name="learning_condition" required>
+                                    <option value="">Choose...</option>
+                                    <option value="NORMAL">Normal Learner</option>
+                                    <option value="DYSLEXIA">Dyslexia</option>
+                                    <option value="ADHD">ADHD</option>
+                                </select>
+                                <div class="invalid-feedback">Please select your learning condition.</div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="username" name="username" required>
+                                <div class="invalid-feedback">Please choose a username.</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="password1" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="password1" name="password1" required>
+                                <div class="invalid-feedback">Please enter a password.</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="password2" class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control" id="password2" name="password2" required>
+                            <div class="invalid-feedback">Please confirm your password.</div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">Register</button>
+                    </form>
+                    <div class="mt-3 text-center">
+                        <p>Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Form validation
+(function () {
+    'use strict'
+    var forms = document.querySelectorAll('.needs-validation')
+    Array.prototype.slice.call(forms)
+        .forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+})()
+</script>
 {% endblock %}

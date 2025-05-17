@@ -1,14 +1,165 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block title %}{{ page_description }}{% endblock %}
+
 {% block content %}
-<h2 id="accessibility-settings">Accessibility Settings</h2>
-<form method="post" aria-labelledby="accessibility-settings" role="form">
-    {% csrf_token %}
-    <label for="dyslexia-font">
-        <input type="checkbox" id="dyslexia-font" name="use_dyslexia_font" {% if accessibility_settings.use_dyslexia_font %}checked{% endif %} tabindex="0">
-        Use Dyslexia-Friendly Font
-    </label>
-    <button type="submit" tabindex="0">Save</button>
-</form>
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">{{ page_description }}</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- General Settings -->
+                        <div class="mb-4">
+                            <h5>General Settings</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="font_size" class="form-label">Font Size</label>
+                                    <input type="range" class="form-range" id="font_size" name="font_size" 
+                                        min="12" max="32" step="2" value="{{ form.font_size.value|default:16 }}">
+                                    <div class="form-text">Current: {{ form.font_size.value|default:16 }}px</div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="font_family" class="form-label">Font Family</label>
+                                    <select class="form-select" id="font_family" name="font_family">
+                                        {% for value, label in form.fields.font_family.choices %}
+                                            <option value="{{ value }}" {% if form.font_family.value == value %}selected{% endif %}>
+                                                {{ label }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Color Settings -->
+                        <div class="mb-4">
+                            <h5>Color Settings</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="background_color" class="form-label">Background Color</label>
+                                    <input type="color" class="form-control form-control-color" id="background_color" 
+                                        name="background_color" value="{{ form.background_color.value|default:'#ffffff' }}">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="text_color" class="form-label">Text Color</label>
+                                    <input type="color" class="form-control form-control-color" id="text_color" 
+                                        name="text_color" value="{{ form.text_color.value|default:'#000000' }}">
+                                </div>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="contrast_mode" 
+                                    name="contrast_mode" {% if form.contrast_mode.value %}checked{% endif %}>
+                                <label class="form-check-label" for="contrast_mode">
+                                    Enable High Contrast Mode
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Learning Preferences -->
+                        <div class="mb-4">
+                            <h5>Learning Preferences</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="prefers_audio" class="form-label">Audio Learning</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="prefers_audio" 
+                                            name="prefers_audio" {% if form.prefers_audio.value %}checked{% endif %}>
+                                        <label class="form-check-label" for="prefers_audio">
+                                            Enable Text-to-Speech
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="prefers_chunked" class="form-label">Content Chunking</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="prefers_chunked" 
+                                            name="prefers_chunked" {% if form.prefers_chunked.value %}checked{% endif %}>
+                                        <label class="form-check-label" for="prefers_chunked">
+                                            Show content in smaller chunks
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Dyslexia Settings -->
+                        {% if user.learning_condition == 'DYSLEXIA' %}
+                        <div class="mb-4">
+                            <h5>Dyslexia Support</h5>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label for="letter_spacing" class="form-label">Letter Spacing</label>
+                                    <input type="range" class="form-range" id="letter_spacing" name="letter_spacing" 
+                                        min="1.0" max="2.0" step="0.1" value="{{ form.letter_spacing.value|default:1.2 }}">
+                                    <div class="form-text">Current: {{ form.letter_spacing.value|default:1.2 }}</div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="word_spacing" class="form-label">Word Spacing</label>
+                                    <input type="range" class="form-range" id="word_spacing" name="word_spacing" 
+                                        min="1.0" max="2.0" step="0.1" value="{{ form.word_spacing.value|default:1.2 }}">
+                                    <div class="form-text">Current: {{ form.word_spacing.value|default:1.2 }}</div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="line_height" class="form-label">Line Height</label>
+                                    <input type="range" class="form-range" id="line_height" name="line_height" 
+                                        min="1.0" max="2.5" step="0.1" value="{{ form.line_height.value|default:1.8 }}">
+                                    <div class="form-text">Current: {{ form.line_height.value|default:1.8 }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- ADHD Settings -->
+                        {% if user.learning_condition == 'ADHD' %}
+                        <div class="mb-4">
+                            <h5>ADHD Focus Settings</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="focus_timer" class="form-label">Focus Timer (minutes)</label>
+                                    <input type="range" class="form-range" id="focus_timer" name="focus_timer" 
+                                        min="5" max="60" value="{{ form.focus_timer.value|default:25 }}">
+                                    <div class="form-text">Current: {{ form.focus_timer.value|default:25 }} minutes</div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="break_duration" class="form-label">Break Duration (minutes)</label>
+                                    <input type="range" class="form-range" id="break_duration" name="break_duration" 
+                                        min="1" max="15" value="{{ form.break_duration.value|default:5 }}">
+                                    <div class="form-text">Current: {{ form.break_duration.value|default:5 }} minutes</div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <button type="submit" class="btn btn-primary">Save Settings</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Form validation
+(function () {
+    'use strict'
+    var forms = document.querySelectorAll('.needs-validation')
+    Array.prototype.slice.call(forms)
+        .forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+})()
+</script>
 {% endblock %}
