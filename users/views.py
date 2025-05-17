@@ -2,7 +2,6 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.urls import reverse_lazy
 from rest_framework import viewsets, permissions
 from .models import CustomUser
 from .forms import CustomUserCreationForm, UserSettingsForm
@@ -63,6 +62,15 @@ def settings_view(request):
         form = UserSettingsForm(instance=request.user)
     return render(request, 'users/settings.html', {'form': form})
 
+@login_required
+def logout_view(request):
+    """
+    Handle user logout.
+    """
+    logout(request)
+    messages.success(request, "You have been logged out.")
+    return redirect('login')
+
 class CustomUserViewSet(viewsets.ModelViewSet):
     """
     API ViewSet for CustomUser model.
@@ -70,4 +78,4 @@ class CustomUserViewSet(viewsets.ModelViewSet):
     """
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
-    permission_classes = [permissions.IsAuthenticated]  # Optional: restrict API to authenticated users
+    permission_classes = [permissions.IsAuthenticated]
