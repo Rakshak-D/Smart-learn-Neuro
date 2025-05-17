@@ -1,9 +1,10 @@
 {% extends 'base.html' %}
 {% block content %}
-<h2>Results for {{ assessment.title }}</h2>
-<ul>
+<h2 id="assessment-results">Results for {{ assessment.title }}</h2>
+<ul aria-label="Assessment responses">
 {% for response in responses %}
   <li>{{ response.response_text }}</li>
 {% endfor %}
 </ul>
+<a href="{% url 'assessment_list' %}" tabindex="0" aria-label="Back to assessments">Back to Assessments</a>
 {% endblock %}
