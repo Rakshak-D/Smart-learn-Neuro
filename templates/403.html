@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Permission Denied (403) - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="error-template">
+                <h1 class="display-1 text-warning">403</h1>
+                <h2 class="display-4">Access Denied</h2>
+                <div class="error-details my-4">
+                    <p class="lead">You don't have permission to access this page or resource.</p>
+                    {% if details %}
+                    <div class="alert alert-warning mt-3">
+                        <p class="mb-0">{{ details }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if not user.is_authenticated %}
+                    <div class="mt-4">
+                        <p>You may need to log in to access this page.</p>
+                        <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt me-2"></i>Log In
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="error-actions mt-4">
+                    <a href="{% url 'home' %}" class="btn btn-primary btn-lg me-2">
+                        <i class="fas fa-home me-2"></i>Take Me Home
+                    </a>
+                    <a href="{% url 'contact' %}" class="btn btn-outline-secondary btn-lg">
+                        <i class="fas fa-envelope me-2"></i>Contact Support
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

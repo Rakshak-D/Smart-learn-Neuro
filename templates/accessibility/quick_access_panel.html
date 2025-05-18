@@ -1,0 +1,182 @@
+<div class="accessibility-toolbar" id="accessibilityToolbar">
+    <button type="button" id="increaseFontSize" title="Increase Font Size" aria-label="Increase Font Size">
+        <i class="fas fa-text-height"></i>
+    </button>
+    <button type="button" id="decreaseFontSize" title="Decrease Font Size" aria-label="Decrease Font Size">
+        <i class="fas fa-text-width"></i>
+    </button>
+    <button type="button" id="toggleContrast" title="Toggle High Contrast" aria-label="Toggle High Contrast">
+        <i class="fas fa-adjust"></i>
+    </button>
+    <button type="button" id="toggleDyslexic" title="Toggle Dyslexic Font" aria-label="Toggle Dyslexic Font">
+        <i class="fas fa-font"></i>
+    </button>
+    <button type="button" id="toggleScreenReader" title="Screen Reader Mode" aria-label="Toggle Screen Reader Mode">
+        <i class="fas fa-assistive-listening-systems"></i>
+    </button>
+    <button type="button" id="showAccessibilityMenu" title="Accessibility Menu" aria-label="Open Accessibility Menu">
+        <i class="fas fa-universal-access"></i>
+    </button>
+</div>
+
+<!-- SVG filters for color blindness simulation (hidden) -->
+<svg height="0" width="0" style="position: absolute;">
+    <defs>
+        <!-- Protanopia (red-weak) -->
+        <filter id="protanopia" x="0" y="0" color-interpolation-filters="sRGB">
+            <feColorMatrix type="matrix" values="0.567,0.433,0,0,0 0.558,0.442,0,0,0 0,0.242,0.758,0,0 0,0,0,1,0" />
+        </filter>
+        
+        <!-- Deuteranopia (green-weak) -->
+        <filter id="deuteranopia" x="0" y="0" color-interpolation-filters="sRGB">
+            <feColorMatrix type="matrix" values="0.625,0.375,0,0,0 0.7,0.3,0,0,0 0,0.3,0.7,0,0 0,0,0,1,0" />
+        </filter>
+        
+        <!-- Tritanopia (blue-weak) -->
+        <filter id="tritanopia" x="0" y="0" color-interpolation-filters="sRGB">
+            <feColorMatrix type="matrix" values="0.95,0.05,0,0,0 0,0.433,0.567,0,0 0,0.475,0.525,0,0 0,0,0,1,0" />
+        </filter>
+    </defs>
+</svg>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toolbar = document.getElementById('accessibilityToolbar');
+    const increaseFontBtn = document.getElementById('increaseFontSize');
+    const decreaseFontBtn = document.getElementById('decreaseFontSize');
+    const toggleContrastBtn = document.getElementById('toggleContrast');
+    const toggleDyslexicBtn = document.getElementById('toggleDyslexic');
+    const toggleScreenReaderBtn = document.getElementById('toggleScreenReader');
+    const showAccessibilityMenuBtn = document.getElementById('showAccessibilityMenu');
+    
+    // Check for saved settings
+    const savedSettings = JSON.parse(localStorage.getItem('accessibilitySettings') || '{}');
+    
+    // Apply saved settings
+    if (savedSettings.highContrast) {
+        document.body.classList.add('high-contrast');
+        toggleContrastBtn.classList.add('active');
+    }
+    
+    if (savedSettings.dyslexicFont) {
+        document.body.classList.add('dyslexia-font');
+        toggleDyslexicBtn.classList.add('active');
+    }
+    
+    if (savedSettings.fontSize) {
+        document.documentElement.style.setProperty('--font-size', savedSettings.fontSize);
+    }
+    
+    // Increase font size
+    increaseFontBtn.addEventListener('click', function() {
+        const currentSize = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--font-size')) || 1;
+        const newSize = Math.min(currentSize + 0.1, 1.5);
+        document.documentElement.style.setProperty('--font-size', newSize + 'rem');
+        saveSetting('fontSize', newSize + 'rem');
+    });
+    
+    // Decrease font size
+    decreaseFontBtn.addEventListener('click', function() {
+        const currentSize = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--font-size')) || 1;
+        const newSize = Math.max(currentSize - 0.1, 0.8);
+        document.documentElement.style.setProperty('--font-size', newSize + 'rem');
+        saveSetting('fontSize', newSize + 'rem');
+    });
+    
+    // Toggle high contrast
+    toggleContrastBtn.addEventListener('click', function() {
+        document.body.classList.toggle('high-contrast');
+        toggleContrastBtn.classList.toggle('active');
+        saveSetting('highContrast', document.body.classList.contains('high-contrast'));
+    });
+    
+    // Toggle dyslexic font
+    toggleDyslexicBtn.addEventListener('click', function() {
+        document.body.classList.toggle('dyslexia-font');
+        toggleDyslexicBtn.classList.toggle('active');
+        saveSetting('dyslexicFont', document.body.classList.contains('dyslexia-font'));
+    });
+    
+    // Toggle screen reader mode
+    toggleScreenReaderBtn.addEventListener('click', function() {
+        document.body.classList.toggle('screen-reader-mode');
+        toggleScreenReaderBtn.classList.toggle('active');
+        saveSetting('screenReader', document.body.classList.contains('screen-reader-mode'));
+    });
+    
+    // Show accessibility menu
+    showAccessibilityMenuBtn.addEventListener('click', function() {
+        window.location.href = '{% url "accessibility:settings" %}';
+    });
+    
+    // Save settings to localStorage
+    function saveSetting(key, value) {
+        const settings = JSON.parse(localStorage.getItem('accessibilitySettings') || '{}');
+        settings[key] = value;
+        localStorage.setItem('accessibilitySettings', JSON.stringify(settings));
+        
+        // Also save to server if user is logged in
+        if (typeof window.userId !== 'undefined') {
+            fetch('{% url "accessibility:update_setting" key="' + key + '" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFTTOKEN': getCookie('csrftoken'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ value: value })
+            });
+        }
+    }
+    
+    // Helper function to get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    // Add keyboard navigation
+    document.addEventListener('keydown', function(e) {
+        // Skip if not in keyboard navigation mode
+        if (!savedSettings.keyboardNav) return;
+        
+        // Handle tab key for focus management
+        if (e.key === 'Tab') {
+            const focusableElements = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+            const focusableContent = document.querySelectorAll(focusableElements);
+            const firstFocusableElement = focusableContent[0];
+            const lastFocusableElement = focusableContent[focusableContent.length - 1];
+            
+            // If going forward by pressing tab and at the last focusable element
+            if (!e.shiftKey && document.activeElement === lastFocusableElement) {
+                e.preventDefault();
+                firstFocusableElement.focus();
+            }
+            // If going backward by pressing shift+tab and at the first focusable element
+            if (e.shiftKey && document.activeElement === firstFocusableElement) {
+                e.preventDefault();
+                lastFocusableElement.focus();
+            }
+        }
+        
+        // Close modals with escape key
+        if (e.key === 'Escape') {
+            const openModal = document.querySelector('.modal.show');
+            if (openModal) {
+                const modal = bootstrap.Modal.getInstance(openModal);
+                if (modal) modal.hide();
+            }
+        }
+    });
+});
+</script>

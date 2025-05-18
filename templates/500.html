@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Server Error (500) - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="error-template">
+                <h1 class="display-1 text-danger">500</h1>
+                <h2 class="display-4">Server Error</h2>
+                <div class="error-details my-4">
+                    <p class="lead">Oops! Something went wrong on our end.</p>
+                    <p>Our team has been notified and we're working to fix the issue.</p>
+                    
+                    <div class="alert alert-warning mt-4">
+                        <h5 class="alert-heading">What you can do:</h5>
+                        <ul class="text-start">
+                            <li>Refresh the page and try again</li>
+                            <li>Go back to the previous page</li>
+                            <li>Try again later</li>
+                            <li>If the problem persists, contact our support team</li>
+                        </ul>
+                    </div>
+                    
+                    {% if request.sentry.id %}
+                    <div class="mt-3">
+                        <p>Error ID: <code>{{ request.sentry.id }}</code></p>
+                        <p>Please include this ID when contacting support.</p>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="error-actions mt-4">
+                    <a href="{% url 'home' %}" class="btn btn-primary btn-lg me-2">
+                        <i class="fas fa-home me-2"></i>Take Me Home
+                    </a>
+                    <a href="{% url 'contact' %}" class="btn btn-outline-secondary btn-lg">
+                        <i class="fas fa-envelope me-2"></i>Contact Support
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
