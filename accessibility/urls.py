@@ -1,10 +1,55 @@
+"""URL configuration for the accessibility app."""
 from django.urls import path, include
+from django.views.generic import TemplateView
 from rest_framework.routers import DefaultRouter
 from . import views
+
+app_name = 'accessibility'
 
 # API Router
 router = DefaultRouter()
 router.register(r'profiles', views.AccessibilityProfileViewSet, basename='accessibility_profile')
+
+urlpatterns = [
+    # Main accessibility settings page
+    path('', views.AccessibilitySettingsView.as_view(), name='settings'),
+    
+    # Quick access panel (for AJAX)
+    path('quick-access/', views.QuickAccessPanelView.as_view(), name='quick_access'),
+    
+    # Toggle settings (AJAX)
+    path('toggle/<str:setting_name>/', 
+         views.ToggleSettingView.as_view(), 
+         name='toggle_setting'),
+    
+    # Update settings with values (AJAX)
+    path('update/<str:setting_name>/', 
+         views.UpdateSettingView.as_view(), 
+         name='update_setting'),
+    
+    # Reset all settings to default (AJAX)
+    path('reset/', 
+         views.ResetSettingsView.as_view(), 
+         name='reset_settings'),
+    
+    # Save all settings (AJAX)
+    path('save/', 
+         views.SaveSettingsView.as_view(), 
+         name='save_settings'),
+    
+    # Get current settings (AJAX)
+    path('get-settings/', 
+         views.GetSettingsView.as_view(), 
+         name='get_settings'),
+    
+    # Accessibility statement
+    path('statement/', 
+         views.AccessibilityStatementView.as_view(), 
+         name='statement'),
+    
+    # Include API URLs
+    path('api/', include((router.urls, 'accessibility_api'))),
+]
 
 # Text Settings
 text_settings_patterns = [
