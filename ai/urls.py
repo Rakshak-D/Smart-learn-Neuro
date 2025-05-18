@@ -1,23 +1,30 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+from rest_framework.documentation import include_docs_urls
+from rest_framework.schemas import get_schema_view
+# Temporarily comment out JWT imports to resolve import errors
+# from rest_framework_simplejwt.views import TokenRefreshView
+
+from . import views
 from .views import (
-    RecommendationView, 
-    process_gesture_view,
-    AdaptiveLearningViewSet,
+    # Existing views
     TextToSpeechView,
     SpeechToTextView,
     FaceDetectionView,
     GestureRecognitionView,
-    LearningAnalyticsViewSet,
     ContentModerationView,
-    PersonalizationEngineViewSet
+    
+    # Adaptive learning views
+    LearningPathView,
+    LearningAnalyticsView,
+    LessonRecommendationView,
+    UpdateLearningProfileView,
+    track_lesson_completion,
+    AssessmentView,
 )
 
 # API Router
 router = DefaultRouter()
-router.register(r'adaptive-learning', AdaptiveLearningViewSet, basename='adaptive_learning')
-router.register(r'learning-analytics', LearningAnalyticsViewSet, basename='learning_analytics')
-router.register(r'personalization', PersonalizationEngineViewSet, basename='personalization')
 
 # Text-to-Speech Endpoints
 tts_patterns = [
@@ -46,17 +53,35 @@ moderation_patterns = [
     path('video/', ContentModerationView.as_view(), name='moderate_video'),
 ]
 
-# Recommendation System
-recommendation_patterns = [
-    path('lessons/', RecommendationView.as_view(), name='recommend_lessons'),
-    path('assessments/', RecommendationView.as_view(), name='recommend_assessments'),
-    path('resources/', RecommendationView.as_view(), name='recommend_resources'),
+# Adaptive Learning Endpoints
+adaptive_learning_patterns = [
+    # Learning path and progress
+    path('learning-path/', LearningPathView.as_view(), name='learning_path'),
+    path('analytics/', LearningAnalyticsView.as_view(), name='learning_analytics'),
+    path('recommendations/', LessonRecommendationView.as_view(), name='lesson_recommendations'),
+    path('update-profile/', UpdateLearningProfileView.as_view(), name='update_learning_profile'),
+    path('track-lesson/', track_lesson_completion, name='track_lesson_completion'),
+    
+    # Assessments
+    path('assessments/', AssessmentView.as_view(), name='assessments_list'),
+    path('assessments/<int:assessment_id>/', AssessmentView.as_view(), name='assessment_detail'),
+    path('assessments/submit/', AssessmentView.as_view(), name='submit_assessment'),
 ]
+
+# Recommendation System - Temporarily commented out to resolve import errors
+# recommendation_patterns = [
+#     path('assessments/', RecommendationView.as_view(), name='recommend_assessments'),
+#     path('resources/', RecommendationView.as_view(), name='recommend_resources'),
+# ]
 
 # URL Patterns
 urlpatterns = [
     # Include router URLs
     path('', include(router.urls)),
+    
+    # Authentication
+    # Temporarily comment out JWT token refresh URL
+    # path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     
     # Text-to-Speech
     path('tts/', include(tts_patterns)),
@@ -70,22 +95,28 @@ urlpatterns = [
     # Content Moderation
     path('moderation/', include(moderation_patterns)),
     
-    # Recommendation System
-    path('recommend/', include(recommendation_patterns)),
+    # Adaptive Learning System
+    path('learning/', include(adaptive_learning_patterns)),
     
-    # Gesture Processing
-    path('gesture/process/', process_gesture_view, name='gesture_process'),
+    # Recommendation System - Temporarily commented out
+    # path('recommend/', include(recommendation_patterns)),
     
-    # Feedback Processing
-    path('feedback/', include([
-        path('submit/', views.FeedbackView.as_view(), name='submit_feedback'),
-        path('analytics/', views.FeedbackAnalyticsView.as_view(), name='feedback_analytics'),
-    ])),
+    # API Documentation
+    path('docs/', include_docs_urls(title='SmartLearn Neuro API')),
     
+    # API Schema
+    path('schema/', get_schema_view(
+        title="SmartLearn Neuro API",
+        description="API for SmartLearn Neuro - Adaptive Learning Platform",
+        version="1.0.0"
+    ), name='openapi-schema'),
     # Analytics Endpoints
     path('analytics/', include([
         path('engagement/', views.EngagementAnalyticsView.as_view(), name='engagement_analytics'),
         path('performance/', views.PerformanceAnalyticsView.as_view(), name='performance_analytics'),
-        path('retention/', views.RetentionAnalyticsView.as_view(), name='retention_analytics'),
+        path('completion/', views.CompletionAnalyticsView.as_view(), name='completion_analytics'),
     ])),
+    
+    # Add a catch-all for the API root
+    path('', views.api_root, name='api_root'),
 ]

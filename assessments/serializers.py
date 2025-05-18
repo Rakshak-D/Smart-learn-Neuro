@@ -1,5 +1,9 @@
 from rest_framework import serializers
-from .models import Assessment, Response
+from django.apps import apps
+
+# Get models using string references to avoid circular imports
+Assessment = apps.get_model('assessments', 'Assessment')
+UserResponse = apps.get_model('assessments', 'UserResponse')
 
 class AssessmentSerializer(serializers.ModelSerializer):
     """

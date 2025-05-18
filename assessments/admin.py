@@ -1,6 +1,10 @@
 from django.contrib import admin
-from .models import Assessment, Response
+from django.apps import apps
 
-# Register Assessment and Response models with the Django admin site
+# Get models using string references to avoid circular imports
+Assessment = apps.get_model('assessments', 'Assessment')
+UserResponse = apps.get_model('assessments', 'UserResponse')
+
+# Register Assessment and UserResponse models with the Django admin site
 admin.site.register(Assessment)
-admin.site.register(Response)
+admin.site.register(UserResponse)
