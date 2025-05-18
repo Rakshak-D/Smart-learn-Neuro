@@ -1,14 +1,668 @@
 {% extends 'base.html' %}
 {% load static %}
 
+{% block title %}Accessibility Settings - {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/accessibility.css' %}">
+<style>
+    .setting-card {
+        transition: all 0.3s ease;
+        margin-bottom: 1.5rem;
+    }
+    .setting-card:hover {
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+    .setting-icon {
+        font-size: 1.5rem;
+        margin-right: 0.75rem;
+        color: var(--primary-color, #0d6efd);
+    }
+    .setting-description {
+        color: var(--secondary-color, #6c757d);
+        font-size: 0.875rem;
+    }
+    .nav-pills .nav-link {
+        color: var(--body-color, #212529);
+        border-radius: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    .nav-pills .nav-link.active {
+        background-color: var(--primary-color, #0d6efd);
+        color: white;
+    }
+    .form-switch .form-check-input:checked {
+        background-color: var(--primary-color, #0d6efd);
+        border-color: var(--primary-color, #0d6efd);
+    }
+    .preview-area {
+        border: 1px solid var(--border-color, #dee2e6);
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        background-color: var(--body-bg, #ffffff);
+        min-height: 200px;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<h2>Accessibility Settings</h2>
-<form method="post" aria-labelledby="accessibility-settings">
-    {% csrf_token %}
-    <label for="dyslexia-font">
-        <input type="checkbox" id="dyslexia-font" name="use_dyslexia_font" {% if accessibility_settings.use_dyslexia_font %}checked{% endif %}>
-        Use Dyslexia-Friendly Font
-    </label>
-    <button type="submit">Save</button>
-</form>
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="card mb-4 setting-card">
+                <div class="card-header bg-transparent">
+                    <h2 class="h5 mb-0">Accessibility Menu</h2>
+                </div>
+                <div class="card-body p-0">
+                    <div class="nav flex-column nav-pills" id="settingsTabs" role="tablist">
+                        <a class="nav-link d-flex align-items-center py-3 px-4 active" id="display-tab" data-bs-toggle="pill" href="#display" role="tab" aria-controls="display" aria-selected="true">
+                            <i class="fas fa-desktop setting-icon"></i>
+                            <div>
+                                <div class="fw-medium">Display</div>
+                                <div class="setting-description">Text, colors, and layout</div>
+                            </div>
+                        </a>
+                        <a class="nav-link d-flex align-items-center py-3 px-4" id="reading-tab" data-bs-toggle="pill" href="#reading" role="tab" aria-controls="reading" aria-selected="false">
+                            <i class="fas fa-book-reader setting-icon"></i>
+                            <div>
+                                <div class="fw-medium">Reading</div>
+                                <div class="setting-description">Fonts and reading aids</div>
+                            </div>
+                        </a>
+                        <a class="nav-link d-flex align-items-center py-3 px-4" id="keyboard-tab" data-bs-toggle="pill" href="#keyboard" role="tab" aria-controls="keyboard" aria-selected="false">
+                            <i class="fas fa-keyboard setting-icon"></i>
+                            <div>
+                                <div class="fw-medium">Keyboard</div>
+                                <div class="setting-description">Navigation and shortcuts</div>
+                            </div>
+                        </a>
+                        <a class="nav-link d-flex align-items-center py-3 px-4" id="assistive-tab" data-bs-toggle="pill" href="#assistive" role="tab" aria-controls="assistive" aria-selected="false">
+                            <i class="fas fa-universal-access setting-icon"></i>
+                            <div>
+                                <div class="fw-medium">Assistive</div>
+                                <div class="setting-description">Screen readers and more</div>
+                            </div>
+                        </a>
+                        <a class="nav-link d-flex align-items-center py-3 px-4 text-danger" id="reset-tab" data-bs-toggle="pill" href="#reset" role="tab" aria-controls="reset" aria-selected="false">
+                            <i class="fas fa-undo setting-icon"></i>
+                            <div>
+                                <div class="fw-medium">Reset</div>
+                                <div class="setting-description">Restore default settings</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card setting-card">
+                <div class="card-body">
+                    <h3 class="h6 mb-3">Quick Access</h3>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="enableToolbar" {% if request.session.enable_toolbar|default:True %}checked{% endif %}>
+                        <label class="form-check-label" for="enableToolbar">Show Accessibility Toolbar</label>
+                    </div>
+                    <p class="small text-muted mt-2 mb-0">
+                        Keep the accessibility toolbar visible on all pages for quick access to these settings.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-9">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h1 class="h4 mb-0">Accessibility Settings</h1>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" id="previewBtn">
+                        <i class="fas fa-eye me-1"></i> Preview
+                    </button>
+                </div>
+                
+                <div class="card-body p-0">
+                    <form method="post" id="accessibilityForm" class="p-4">
+                        {% csrf_token %}
+                        
+                        {% if messages %}
+                        <div class="mb-4">
+                            {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        <div class="tab-content">
+                            <!-- Display Tab -->
+                            <div class="tab-pane fade show active" id="display" role="tabpanel" aria-labelledby="display-tab">
+                                <h2 class="h5 mb-4">Display Settings</h2>
+                                <p class="text-muted mb-4">Customize how content is displayed to best suit your needs.</p>
+                                
+                                <div class="row g-4">
+                                    <!-- High Contrast Toggle -->
+                                    <div class="col-md-6">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <div class="d-flex align-items-center mb-3">
+                                                    <div class="bg-primary bg-opacity-10 p-3 rounded-3 me-3">
+                                                        <i class="fas fa-adjust text-primary"></i>
+                                                    </div>
+                                                    <h3 class="h6 mb-0">High Contrast Mode</h3>
+                                                </div>
+                                                <p class="small text-muted mb-3">Enhance color contrast for better readability.</p>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="highContrast" name="high_contrast" 
+                                                           {% if request.session.high_contrast %}checked{% endif %}>
+                                                    <label class="form-check-label" for="highContrast">Enable High Contrast</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Dark Mode Toggle -->
+                                    <div class="col-md-6">
+                                        <div class="card h-100">
+                                            <div class="card-body">
+                                                <div class="d-flex align-items-center mb-3">
+                                                    <div class="bg-primary bg-opacity-10 p-3 rounded-3 me-3">
+                                                        <i class="fas fa-moon text-primary"></i>
+                                                    </div>
+                                                    <h3 class="h6 mb-0">Dark Mode</h3>
+                                                </div>
+                                                <p class="small text-muted mb-3">Switch between light and dark color schemes.</p>
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" id="darkMode" name="dark_mode"
+                                                           {% if request.session.dark_mode %}checked{% endif %}>
+                                                    <label class="form-check-label" for="darkMode">Enable Dark Mode</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Text Size -->
+                                    <div class="col-12">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h3 class="h6 mb-3">Text Size</h3>
+                                                <div class="d-flex align-items-center">
+                                                    <small class="me-2">A</small>
+                                                    <input type="range" class="form-range" id="textSize" name="text_size" min="0.8" max="1.5" step="0.1" 
+                                                           value="{{ request.session.text_size|default:'1' }}">
+                                                    <small class="ms-2">A</small>
+                                                    <span class="ms-3 small text-muted" id="textSizeValue">
+                                                        {{ request.session.text_size|default:'1' }}x
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Preview Area -->
+                                    <div class="col-12">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h3 class="h6 mb-3">Preview</h3>
+                                                <div class="preview-area" id="previewArea">
+                                                    <h4 class="h5">Sample Content</h4>
+                                                    <p>This is a preview of how your settings will affect the text appearance. The quick brown fox jumps over the lazy dog.</p>
+                                                    <button class="btn btn-sm btn-outline-primary me-2">Example Button</button>
+                                                    <a href="#" class="text-primary">Example Link</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <h3 class="h6">Color Contrast</h3>
+                                    <div class="form-check">
+                                        {{ form.high_contrast.0 }}
+                                    </div>
+                                    <div class="form-check">
+                                        {{ form.high_contrast.1 }}
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <h3 class="h6">Font Size</h3>
+                                    <div class="btn-group w-100" role="group">
+                                        {% for choice in form.font_size %}
+                                            {{ choice.tag }}
+                                            <label for="{{ choice.id_for_label }}" class="btn btn-outline-primary">
+                                                {{ choice.choice_label }}
+                                            </label>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <h3 class="h6">Dyslexia-Friendly Font</h3>
+                                    <div class="form-check form-switch">
+                                        {{ form.dyslexia_font }}
+                                        <label class="form-check-label" for="{{ form.dyslexia_font.id_for_label }}">
+                                            Use OpenDyslexic font
+                                        </label>
+                                    </div>
+                                    <p class="form-text text-muted">
+                                        This changes the font to be more readable for users with dyslexia.
+                                    </p>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <h3 class="h6">Color Blindness</h3>
+                                    <div class="row">
+                                        {% for choice in form.color_blind %}
+                                            <div class="col-md-6 mb-2">
+                                                <div class="form-check">
+                                                    {{ choice.tag }}
+                                                    <label for="{{ choice.id_for_label }}" class="form-check-label">
+                                                        {{ choice.choice_label }}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Keyboard Navigation Tab -->
+                            <div class="tab-pane fade" id="keyboard-nav">
+                                <h2 class="h5 mb-4">Keyboard Navigation</h2>
+                                
+                                <div class="mb-4">
+                                    <div class="form-check form-switch">
+                                        {{ form.keyboard_nav }}
+                                        <label class="form-check-label" for="{{ form.keyboard_nav.id_for_label }}">
+                                            Enable enhanced keyboard navigation
+                                        </label>
+                                    </div>
+                                    <p class="form-text text-muted">
+                                        Adds keyboard shortcuts and improves focus management for better keyboard navigation.
+                                    </p>
+                                </div>
+                                
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <h4 class="h6">Keyboard Shortcuts</h4>
+                                        <dl class="row mb-0">
+                                            <dt class="col-sm-4"><kbd>Tab</kbd></dt>
+                                            <dd class="col-sm-8">Move focus between interactive elements</dd>
+                                            
+                                            <dt class="col-sm-4"><kbd>Enter</kbd> / <kbd>Space</kbd></dt>
+                                            <dd class="col-sm-8">Activate focused element</dd>
+                                            
+                                            <dt class="col-sm-4"><kbd>Shift</kbd> + <kbd>Tab</kbd></dt>
+                                            <dd class="col-sm-8">Move focus backward</dd>
+                                            
+                                            <dt class="col-sm-4"><kbd>Esc</kbd></dt>
+                                            <dd class="col-sm-8">Close modal or dropdown</dd>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Screen Reader Tab -->
+                            <div class="tab-pane fade" id="screen-reader">
+                                <h2 class="h5 mb-4">Screen Reader Settings</h2>
+                                
+                                <div class="mb-4">
+                                    <div class="form-check form-switch">
+                                        {{ form.screen_reader }}
+                                        <label class="form-check-label" for="{{ form.screen_reader.id_for_label }}">
+                                            Optimize for screen readers
+                                        </label>
+                                    </div>
+                                    <p class="form-text text-muted">
+                                        Improves compatibility with screen readers by adding ARIA attributes and semantic HTML.
+                                    </p>
+                                </div>
+                                
+                                <div class="alert alert-info">
+                                    <h3 class="h6">Screen Reader Tips</h3>
+                                    <ul class="mb-0">
+                                        <li>Use the tab key to navigate through interactive elements</li>
+                                        <li>Use arrow keys to navigate within menus and lists</li>
+                                        <li>Press Enter or Space to activate buttons and links</li>
+                                        <li>Use the skip to content link at the top of the page to bypass navigation</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <!-- Animations Tab -->
+                            <div class="tab-pane fade" id="animations">
+                                <h2 class="h5 mb-4">Animation Settings</h2>
+                                
+                                <div class="mb-4">
+                                    <div class="form-check form-switch">
+                                        {{ form.animations }}
+                                        <label class="form-check-label" for="{{ form.animations.id_for_label }}">
+                                            Enable animations
+                                        </label>
+                                    </div>
+                                    <p class="form-text text-muted">
+                                        Toggle all animations and transitions on the site.
+                                    </p>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <div class="form-check form-switch">
+                                        {{ form.reduced_motion }}
+                                        <label class="form-check-label" for="{{ form.reduced_motion.id_for_label }}">
+                                            Reduced motion
+                                        </label>
+                                    </div>
+                                    <p class="form-text text-muted">
+                                        Reduces or removes animations for users who prefer less motion.
+                                    </p>
+                                </div>
+                                
+                                <div class="alert alert-warning">
+                                    <h3 class="h6">Note about animations</h3>
+                                    <p class="mb-0">
+                                        Some animations are important for understanding the interface. 
+                                        Disabling them might affect the user experience.
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <!-- Reset Settings Tab -->
+                            <div class="tab-pane fade" id="reset-settings">
+                                <div class="text-center py-5">
+                                    <div class="mb-4">
+                                        <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                                        <h2 class="h4">Reset All Settings?</h2>
+                                    </div>
+                                    <p class="mb-4">
+                                        This will reset all your accessibility settings to their default values.
+                                        This action cannot be undone.
+                                    </p>
+                                    <button type="button" class="btn btn-danger" id="resetSettingsBtn">
+                                        <i class="fas fa-undo me-2"></i> Reset All Settings
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 pt-3 border-top">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i> Save Settings
+                            </button>
+                            <a href="{% url 'profile' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-2"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Preview Modal -->
+<div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="previewModalLabel">Preview Settings</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="mb-3">Sample Text</h6>
+                        <p class="preview-text">
+                            The quick brown fox jumps over the lazy dog. 1234567890
+                        </p>
+                        <p class="preview-text">
+                            Pack my box with five dozen liquor jugs.
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="mb-3">Sample Form</h6>
+                        <div class="mb-3">
+                            <label for="previewInput" class="form-label">Example input</label>
+                            <input type="text" class="form-control" id="previewInput" placeholder="Type something...">
+                        </div>
+                        <div class="mb-3">
+                            <label for="previewSelect" class="form-label">Example select</label>
+                            <select class="form-select" id="previewSelect">
+                                <option selected>Open this select menu</option>
+                                <option value="1">One</option>
+                                <option value="2">Two</option>
+                                <option value="3">Three</option>
+                            </select>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="previewCheck">
+                            <label class="form-check-label" for="previewCheck">
+                                Check this checkbox
+                            </label>
+                        </div>
+                        <button type="button" class="btn btn-primary">Example Button</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Bootstrap tabs
+        var tabElms = [].slice.call(document.querySelectorAll('a[data-bs-toggle="tab"]'));
+        var tabList = tabElms.map(function(tabEl) {
+            return new bootstrap.Tab(tabEl);
+        });
+        
+        // Handle preview button click
+        var previewBtn = document.getElementById('previewBtn');
+        if (previewBtn) {
+            previewBtn.addEventListener('click', function() {
+                var previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
+                previewModal.show();
+            });
+        }
+        
+        // Handle form submission with AJAX
+        var form = document.getElementById('accessibilityForm');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Add loading state to submit button
+                var submitBtn = this.querySelector('button[type="submit"]');
+                var originalBtnText = submitBtn.innerHTML;
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Saving...';
+                
+                // Collect form data
+                var formData = new FormData(form);
+                
+                // Send AJAX request
+                fetch('', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Show success message
+                        showAlert('Settings saved successfully!', 'success');
+                        
+                        // Update session settings
+                        if (data.settings) {
+                            updateSessionSettings(data.settings);
+                        }
+                    } else {
+                        showAlert('Failed to save settings. Please try again.', 'danger');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showAlert('An error occurred while saving settings.', 'danger');
+                })
+                .finally(() => {
+                    // Restore button state
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnText;
+                });
+            });
+        }
+        
+        // Handle reset settings button
+        var resetBtn = document.getElementById('resetSettingsBtn');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', function() {
+                if (confirm('Are you sure you want to reset all accessibility settings to their default values?')) {
+                    fetch('{% url "accessibility:settings" %}?reset=1', {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRFToken': '{{ csrf_token }}'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            window.location.reload();
+                        } else {
+                            showAlert('Failed to reset settings.', 'danger');
+                        }
+                    });
+                }
+            });
+        }
+        
+        // Handle toolbar toggle
+        var toolbarToggle = document.getElementById('enableToolbar');
+        if (toolbarToggle) {
+            toolbarToggle.addEventListener('change', function() {
+                fetch('{% url "accessibility:toggle_setting" "enable_toolbar" %}', {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        value: this.checked
+                    })
+                });
+            });
+        }
+        
+        // Show alert message
+        function showAlert(message, type) {
+            // Remove any existing alerts
+            var existingAlerts = document.querySelectorAll('.alert-dismissible');
+            existingAlerts.forEach(alert => alert.remove());
+            
+            // Create new alert
+            var alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+            alertDiv.role = 'alert';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            
+            // Insert at the top of the form
+            if (form) {
+                form.insertBefore(alertDiv, form.firstChild);
+                
+                // Scroll to top
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+                
+                // Auto-dismiss after 5 seconds
+                setTimeout(() => {
+                    var bsAlert = new bootstrap.Alert(alertDiv);
+                    bsAlert.close();
+                }, 5000);
+            }
+        }
+        
+        // Update session settings in the UI
+        function updateSessionSettings(settings) {
+            // Update toggles and inputs based on settings
+            for (var key in settings) {
+                var element = document.querySelector(`[name="${key}"]`);
+                if (element) {
+                    if (element.type === 'checkbox') {
+                        element.checked = settings[key];
+                    } else if (element.type === 'radio') {
+                        document.querySelector(`[name="${key}"][value="${settings[key]}"]`).checked = true;
+                    } else {
+                        element.value = settings[key];
+                    }
+                }
+            }
+            
+            // Update preview
+            updatePreview();
+        }
+        
+        // Update preview based on current settings
+        function updatePreview() {
+            var previewArea = document.getElementById('previewArea');
+            if (!previewArea) return;
+            
+            // Get all form inputs
+            var formData = new FormData(document.getElementById('accessibilityForm'));
+            
+            // Apply high contrast
+            if (formData.get('high_contrast') === 'on') {
+                previewArea.classList.add('high-contrast');
+            } else {
+                previewArea.classList.remove('high-contrast');
+            }
+            
+            // Apply dark mode
+            if (formData.get('dark_mode') === 'on') {
+                previewArea.classList.add('dark-mode');
+            } else {
+                previewArea.classList.remove('dark-mode');
+            }
+            
+            // Apply font size
+            var textSize = formData.get('text_size') || '1';
+            previewArea.style.setProperty('--text-size', `${textSize}rem`);
+            
+            // Update text size display
+            var textSizeValue = document.getElementById('textSizeValue');
+            if (textSizeValue) {
+                textSizeValue.textContent = `${textSize}x`;
+            }
+            
+            // Apply dyslexia font
+            if (formData.get('dyslexia_font') === 'on') {
+                previewArea.classList.add('dyslexia-font');
+            } else {
+                previewArea.classList.remove('dyslexia-font');
+            }
+        }
+        
+        // Add event listeners for real-time preview
+        var formInputs = document.querySelectorAll('#accessibilityForm input, #accessibilityForm select, #accessibilityForm textarea');
+        formInputs.forEach(function(input) {
+            input.addEventListener('change', updatePreview);
+            input.addEventListener('input', updatePreview);
+        });
+        
+        // Initial preview
+        updatePreview();
+    });
+</script>
 {% endblock %}
