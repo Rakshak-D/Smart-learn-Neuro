@@ -1,11 +1,22 @@
-# SmartLearnNeuro/urls.py
-
+"""
+URL configuration for SmartLearnNeuro project.
+"""
+import os
 from django.contrib import admin
 from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.generic import TemplateView
 from django.views.decorators.csrf import csrf_exempt
+
+# Import custom error handlers
+from core.error_handlers import custom_400, custom_403, custom_404, custom_500
+
+# Set the error handlers
+handler400 = custom_400
+handler403 = custom_403
+handler404 = custom_404
+handler500 = custom_500
 
 # API Versioning
 urlpatterns = [
@@ -28,6 +39,9 @@ urlpatterns = [
         
         # AI features
         path('ai/', include('ai.urls')),
+        
+        # Chatbot features
+        path('chatbot/', include('chatbot.urls')),
         
         # Accessibility features
         path('accessibility/', include('accessibility.urls')),
