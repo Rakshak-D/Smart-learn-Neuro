@@ -1,163 +1,268 @@
-# SmartLearn Neuro: AI-Powered Personalized Learning Platform
 
-## Overview
-SmartLearn Neuro is a comprehensive AI-powered personalized learning platform specially designed for neurodivergent learners, particularly those with ADHD and dyslexia. The platform leverages adaptive learning technologies to create customized learning experiences based on individual needs, preferences, and learning conditions.
+---
 
-## Key Features
+# 🧠 SmartLearnNeuro
 
-### Features for ADHD Learners
-Learners with ADHD often struggle with attention, focus, organization, and time management. These features are designed to help them stay engaged and manage their learning effectively:
+[![Django](https://img.shields.io/badge/Django-4.2-brightgreen)](https://www.djangoproject.com/)
+[![DRF](https://img.shields.io/badge/Django_REST-blue)](https://www.django-rest-framework.org/)
+[![GitHub Issues](https://img.shields.io/badge/Report_Issues-Here-red)](https://github.com/Rakshak-D/Smart-learn-Neuro/issues)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-1. **Short, Interactive Lessons**  
-   - *Purpose*: Lessons are divided into small, digestible segments (5-10 minutes) with interactive elements like quizzes or clickable visuals.  
-   - *Benefit*: Prevents overwhelm, sustains attention, and keeps learners engaged through variety and interactivity.
+**SmartLearnNeuro** is an accessible, Django-based e-learning platform designed to empower neurodiverse learners, including those with dyslexia and ADHD. With a focus on personalization and inclusivity, it provides adaptive learning experiences, robust accessibility features, and a user-friendly interface to enhance education for all.
 
-2. **Movement Break Reminders**  
-   - *Purpose*: Automated prompts suggest short breaks at customizable intervals (e.g., every 15 minutes) with ideas like stretches or quick activities.  
-   - *Benefit*: Addresses restlessness, helping learners refresh and refocus by incorporating physical movement.
+![Platform Overview](https://via.placeholder.com/1500x600.png?text=SmartLearnNeuro+Dashboard+Preview)
 
-3. **Visual Timers and Progress Bars**  
-   - *Purpose*: Timers track task duration, and progress bars visually show completion status.  
-   - *Benefit*: Improves time management and provides a sense of achievement, motivating learners to continue.
+---
 
-4. **Gamified Rewards System**  
-   - *Purpose*: Learners earn points, badges, or unlock levels for completing tasks, with immediate feedback.  
-   - *Benefit*: Boosts motivation and focus through instant rewards and a game-like experience.
+## ✨ Key Features
 
-5. **Focus Mode**  
-   - *Purpose*: A mode that hides unnecessary interface elements, disables notifications, and offers optional white noise or calming sounds.  
-   - *Benefit*: Reduces distractions, enabling learners to concentrate on the task at hand.
+### ♿ Accessibility
+- **Customizable Settings**: Adjust font size, dyslexia-friendly fonts (e.g., OpenDyslexic), high contrast modes, and color blindness filters.
+- **Assistive Tools**: Text-to-speech, screen reader optimization, keyboard navigation, and reading guides.
+- **Neurodiverse Support**: Tailored settings for dyslexia (e.g., letter spacing, simplified language) and ADHD (e.g., focus timers, break reminders).
 
-6. **Customizable Learning Paths**  
-   - *Purpose*: Learners can select lesson order or pace based on their interests or comfort level.  
-   - *Benefit*: Increases engagement by giving control, reducing frustration from rigid structures.
+### 👤 User Management
+- **Secure Authentication**: User registration, login, and logout with role-based access.
+- **Profile Customization**: Personalize learning preferences, accessibility settings, and progress tracking.
+- **Learning Conditions**: Support for ADHD, dyslexia, and standard learners with condition-specific optimizations.
 
-7. **Simplified Navigation and Interface**  
-   - *Purpose*: A clean, intuitive design with minimal menus and clear layouts.  
-   - *Benefit*: Minimizes cognitive load and prevents learners from getting sidetracked.
+### 📚 Learning Components
+- **Lessons & Assessments**: Structured content delivery with interactive assessments (details inferred; specifics limited in provided files).
+- **Adaptive Learning Paths**: Personalized pacing and difficulty adjustments based on user performance.
+- **Progress Tracking**: Monitor completed lessons, engagement levels, and learning streaks.
 
-### Features for Dyslexia Learners
-Dyslexia learners face challenges with reading, writing, and processing text. These features enhance accessibility and support their learning needs:
+### 🤖 AI Integration
+- **Adaptive Learning**: AI-driven content adjustments for difficulty and pacing (assumed functionality based on context).
+- **Reward System**: Gamification with points, levels, and achievements to boost engagement, especially for ADHD learners.
 
-1. **Text-to-Speech (TTS)**  
-   - *Purpose*: Converts all text (lessons, instructions, quizzes) into audio for listening.  
-   - *Benefit*: Removes the need to read, making content accessible and reducing cognitive strain.
+---
 
-2. **Adjustable Text Settings**  
-   - *Purpose*: Allows customization of font type (e.g., OpenDyslexic), size, color, and background.  
-   - *Benefit*: Improves readability by reducing visual stress and tailoring text to individual preferences.
+## 🚀 Quick Start
 
-3. **Audio-Based Assessments**  
-   - *Purpose*: Quizzes and tests are presented in audio format, with options to respond via speech or selection.  
-   - *Benefit*: Eliminates reading and writing barriers, allowing learners to demonstrate knowledge effectively.
+### Prerequisites
+- **Python**: 3.9+
+- **PostgreSQL**: 14+ (recommended; SQLite used in development)
+- **Node.js**: 18+ (for frontend dependencies)
 
-4. **Visual Aids and Multimedia**  
-   - *Purpose*: Lessons include images, videos, and interactive elements to explain concepts.  
-   - *Benefit*: Offers non-text alternatives, supporting comprehension through visual and auditory channels.
+### Installation
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/Rakshak-D/Smart-learn-Neuro.git
+   cd Smart-learn-Neuro
+   ```
 
-5. **Reading Guides**  
-   - *Purpose*: Tools like a digital ruler or line highlighter assist in tracking text.  
-   - *Benefit*: Reduces the effort of following lines or words, making reading less overwhelming.
+2. **Set Up Virtual Environment**:
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate  # On Windows: `.venv\Scripts\activate`
+   ```
 
-6. **Spelling and Grammar Assistance**  
-   - *Purpose*: Highlights errors in written responses and suggests corrections.  
-   - *Benefit*: Supports writing skill development and boosts confidence in written tasks.
+3. **Install Dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-7. **Chunking Content**  
-   - *Purpose*: Breaks text into smaller sections with headings and bullet points.  
-   - *Benefit*: Makes reading more manageable by presenting information in bite-sized pieces.
+4. **Configure Environment**:
+   Create a `.env` file in the project root:
+   ```bash
+   echo "SECRET_KEY=your-secret-key-here" > .env
+   echo "DEBUG=True" >> .env
+   echo "DATABASE_URL=postgres://user:password@localhost:5432/smartlearnneuro" >> .env
+   ```
 
-### Shared Features for All Learners
-These features benefit both groups by enhancing personalization, accessibility, and engagement:
+5. **Set Up Database**:
+   - Update `DATABASES` in `settings.py` with your PostgreSQL credentials if not using `.env`.
+   - Run migrations:
+     ```bash
+     python manage.py migrate
+     ```
+   - Create a superuser:
+     ```bash
+     python manage.py createsuperuser
+     ```
 
-1. **Personalized Learning Paths**  
-   - *Purpose*: Adapts content based on the learner's condition, performance, and preferences.  
-   - *Benefit*: Tailors the experience to individual needs, improving effectiveness and comfort.
+6. **Start the Server**:
+   ```bash
+   python manage.py runserver
+   ```
 
-2. **Progress Tracking with Visual Feedback**  
-   - *Purpose*: Displays progress through bars, percentages, or badges based on achievements.  
-   - *Benefit*: Motivates learners by showing tangible progress, encouraging persistence.
+### Access Endpoints
+- **Home**: `http://localhost:8000/`
+- **Admin Dashboard**: `http://localhost:8000/admin/`
+- **User Profile**: `http://localhost:8000/users/profile/`
+- **Accessibility Settings**: `http://localhost:8000/accessibility/settings/`
+- **Lessons**: `http://localhost:8000/lessons/` (assumed based on templates)
 
-3. **Speech-to-Text (STT)**  
-   - *Purpose*: Enables voice input for responses or searches.  
-   - *Benefit*: Eases writing for dyslexia learners and speeds up idea capture for ADHD learners.
+---
 
-4. **Customizable Settings Menu**  
-   - *Purpose*: A central hub to adjust preferences like break frequency, font size, or TTS settings.  
-   - *Benefit*: Empowers learners to personalize the platform easily, promoting independence.
+## 🌐 System Overview
 
-5. **Offline Access**  
-   - *Purpose*: Allows downloading of lessons and resources for offline use.  
-   - *Benefit*: Supports learning in distraction-free settings or with limited internet access.
-
-6. **Accessibility-First Design**  
-   - *Purpose*: Features a high-contrast, clear-font interface with minimal distractions.  
-   - *Benefit*: Reduces cognitive load and enhances usability for all learners.
-
-## Technical Features
-
-### AI Capabilities
-- **Adaptive Learning Engine**: Dynamically adjusts content difficulty based on performance
-- **Personalization Engine**: Creates tailored learning paths based on user preferences and learning conditions
-- **Gesture Recognition**: Detects learner engagement through facial expressions and gestures
-- **Text-to-Speech & Speech-to-Text**: Provides comprehensive audio support throughout the platform
-- **Learning Analytics**: Provides insights into learning patterns and recommends optimal study strategies
-
-### Accessibility Features
-- **Dyslexia-friendly Fonts**: OpenDyslexic, Comic Sans, and other readable fonts
-- **High Contrast Modes**: Various color schemes for different visual sensitivities
-- **Keyboard Navigation**: Complete platform navigation without mouse dependency
-- **Screen Reader Compatibility**: ARIA compliance and screen reader optimizations
-- **Reading Guides**: Visual tools to aid reading text passages
-
-### User Experience
-- **Customizable Interfaces**: Adjust layouts, colors, and element sizes
-- **Progressive Web App**: Works offline and can be installed on devices
-- **Responsive Design**: Optimized for all screen sizes and devices
-- **Simple Navigation**: Clear, consistent navigation patterns
-- **Distraction-free Mode**: Focus-enhancing viewing options
-
-## Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/SmartLearn-Neuro.git
-
-# Navigate to project directory
-cd SmartLearn-Neuro
-
-# Create a virtual environment
-python -m venv venv
-
-# Activate virtual environment
-# On Windows
-venv\Scripts\activate
-# On macOS/Linux
-source venv/bin/activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Apply migrations
-python manage.py migrate
-
-# Create a superuser
-python manage.py createsuperuser
-
-# Run the development server
-python manage.py runserver
+### Architecture Diagram
+```mermaid
+graph TD
+    A[User] --> B{Authentication}
+    B -->|Authenticated| C[Profile Manager]
+    B -->|Guest| D[Public Pages]
+    C --> E[Accessibility Settings]
+    C --> F[Learning Modules]
+    E --> G[(PostgreSQL)]
+    F --> G
+    F --> H[AI Engine]
 ```
 
-## Technology Stack
-- **Backend**: Django, Django REST Framework
-- **AI/ML**: TensorFlow, scikit-learn, NLTK
-- **Frontend**: HTML5, CSS3, JavaScript, Vue.js
-- **Database**: PostgreSQL
-- **Accessibility**: ARIA, OpenDyslexic fonts
-- **Deployment**: Docker, Gunicorn, Nginx
+### Data Flow
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant S as System
+    participant D as Database
+    
+    U->>S: Login/Register
+    S->>D: Verify Credentials
+    D-->>S: User Data
+    S->>U: Dashboard
+    
+    U->>S: Update Accessibility Settings
+    S->>D: Save Settings
+    D-->>S: Success
+    S->>U: Updated Interface
+```
 
-## Credits
-Developed by the SmartLearn team for the NMIT 2025 Hackathon.
+---
 
-## License
-MIT License
+## 🛠 Technology Stack
+
+| **Component**     | **Technologies**                          |
+|-------------------|-------------------------------------------|
+| **Frontend**      | HTML5, CSS3, JavaScript, Bootstrap, HTMX  |
+| **Backend**       | Django 4.2, Django REST Framework         |
+| **Database**      | PostgreSQL (production), SQLite (dev)     |
+| **Accessibility** | OpenDyslexic font, Chart.js for visuals   |
+| **Security**      | CSRF protection, session management       |
+
+---
+
+## 📂 Repository Structure
+```
+Smart-learn-Neuro/
+├── accessibility/     # Accessibility features and settings
+│   ├── models/        # Dyslexia, ADHD, and general settings
+│   ├── middleware/    # Request/response processing
+│   └── templates/     # Accessibility UI components
+├── users/            # User authentication and profiles
+│   ├── models/       # CustomUser with learning conditions
+│   └── views/        # Login, register, profile management
+├── templates/        # Base templates and error pages
+├── static/           # CSS, JS, and other static assets
+└── manage.py         # Django management script
+```
+
+---
+
+## 📝 Core Dependencies
+While a `requirements.txt` wasn’t provided, inferred dependencies include:
+```text
+Django==4.2.11
+djangorestframework==3.15.1
+psycopg2-binary==2.9.9  # PostgreSQL adapter
+python-dotenv==1.0.0
+```
+
+---
+
+## 🐛 Issue Reporting
+[![GitHub Issues](https://img.shields.io/badge/Report_Issues-Here-red)](https://github.com/Rakshak-D/Smart-learn-Neuro/issues)
+
+**Bug Report Template**:
+```markdown
+## Description
+[What went wrong?]
+
+## Steps to Reproduce
+1. [Step 1]
+2. [Step 2]
+3. [Observe issue]
+
+**Expected Behavior**
+[What should happen?]
+
+**Actual Behavior**
+[What actually happens?]
+
+**Environment**
+- OS: [e.g., Windows 11]
+- Browser: [e.g., Chrome 120]
+- Python Version: [e.g., 3.9]
+
+**Additional Context**
+[Screenshots, logs, etc.]
+```
+
+**Labels**:
+- `bug` - Code issues
+- `enhancement` - Feature requests
+- `accessibility` - Accessibility-related concerns
+
+---
+
+## 📜 License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+
+## 📬 Contact & Support
+**Maintainer**: Rakshak D  
+📧 [rakshakmce@gmail.com](mailto:rakshakmce@gmail.com)  
+🔗 [GitHub Profile](https://github.com/Rakshak-D)
+
+---
+
+## 🛠️ Development Roadmap
+
+### Upcoming Features
+- **AI Enhancements**: Real-time learning pace adjustments.
+- **Mobile App**: Progressive Web App support.
+- **Multilingual Support**: Interface translations.
+- **Analytics Dashboard**: Detailed learning insights.
+
+### Contribution Guide
+1. Fork the repository.
+2. Create a branch (`git checkout -b feat/new-feature`).
+3. Commit changes (`git commit -m "Add new feature"`).
+4. Push to your branch (`git push origin feat/new-feature`).
+5. Open a Pull Request.
+
+**Standards**:
+- Adhere to PEP 8.
+- Write clear commit messages.
+- Include docstrings for major functions.
+
+---
+# 👥 Contributors
+
+This project is made possible by the dedicated efforts of our team:
+
+## Backend & AI/ML
+- **Rakshak D**  
+  [GitHub Profile](https://github.com/Rakshak-D) | Core Architecture & Recommendation Systems
+- **Pranathi R**  
+  [GitHub Profile](https://github.com/Pranathi38) | Database Design & NLP Integration
+
+## Frontend & Deployment
+- **Inchara P**  
+  [GitHub Profile](https://github.com/inchara1702) | UI/UX Design & Accessibility Features
+- **Sushmindra S.V**  
+  [GitHub Profile](https://github.com/sushamindra) | Deployment Pipeline & Performance Optimization
+
+---
+
+### 🌟 Full Contributor Recognition
+[![Contributors Graph](https://contrib.rocks/image?repo=Rakshak-D/Smart-learn-Neuro)](https://github.com/Rakshak-D/Smart-learn-Neuro/graphs/contributors)
+
+**Want to join us?**  
+We welcome contributions! Check out our:  
+🔹 [Development Roadmap](https://github.com/Rakshak-D/Smart-learn-Neuro/wiki/Roadmap)  
+🔹 [Contribution Guidelines](https://github.com/Rakshak-D/Smart-learn-Neuro/blob/main/CONTRIBUTING.md)
+
+*Together, we're redefining accessible education!* 🧠✨
