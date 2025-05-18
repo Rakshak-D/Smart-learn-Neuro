@@ -1,5 +1,91 @@
 import json
 import logging
+import platform
+import psutil
+from datetime import datetime, timedelta
+from django.db import connection
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework import status
+
+
+class HealthCheckView(APIView):
+    """
+    Health check endpoint for monitoring the application status.
+    """
+    permission_classes = []  # No authentication required
+    
+    def get(self, request, format=None):
+        """
+        Check the health of the application and its dependencies.
+        """
+        # Basic system information
+        system_info = {
+            'status': 'operational',
+            'timestamp': datetime.utcnow().isoformat(),
+            'system': {
+                'python_version': platform.python_version(),
+                'os': platform.system(),
+                'os_version': platform.release(),
+                'hostname': platform.node(),
+                'cpu_usage': psutil.cpu_percent(),
+                'memory_usage': psutil.virtual_memory().percent,
+                'disk_usage': psutil.disk_usage('/').percent
+            },
+            'services': {}
+        }
+        
+        # Check database connection
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute('SELECT 1')
+                system_info['services']['database'] = {
+                    'status': 'operational',
+                    'type': connection.vendor,
+                    'version': connection.pg_version if hasattr(connection, 'pg_version') else 'unknown'
+                }
+        except Exception as e:
+            system_info['services']['database'] = {
+                'status': 'unavailable',
+                'error': str(e)
+            }
+            system_info['status'] = 'degraded'
+        
+        # Add AI services status
+        try:
+            from .orchestrator import ai_orchestrator
+            system_info['services']['ai_orchestrator'] = {
+                'status': 'operational',
+                'services': list(ai_orchestrator.__dict__.keys())
+            }
+        except Exception as e:
+            system_info['services']['ai_orchestrator'] = {
+                'status': 'unavailable',
+                'error': str(e)
+            }
+            system_info['status'] = 'degraded'
+        
+        # Determine overall status
+        if system_info['status'] != 'degraded':
+            system_info['status'] = 'operational'
+        
+        return Response(system_info, 
+                      status=status.HTTP_200_OK if system_info['status'] == 'operational' 
+                             else status.HTTP_503_SERVICE_UNAVAILABLE)
+
+
+# Health check function for URL routing
+def health_check(request):
+    """Simple health check endpoint for load balancers and monitoring."""
+    return JsonResponse({
+        'status': 'ok',
+        'timestamp': datetime.utcnow().isoformat(),
+        'service': 'smartlearn-ai'
+    })
+
+
+import json
+import logging
 from datetime import datetime, timedelta
 
 from rest_framework.views import APIView

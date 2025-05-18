@@ -1,52 +1,83 @@
+"""
+URL configuration for AI services in SmartLearn Neuro.
+
+This module defines all the API endpoints for AI services including text analysis,
+speech processing, computer vision, and adaptive learning features.
+"""
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from rest_framework.documentation import include_docs_urls
 from rest_framework.schemas import get_schema_view
-# Temporarily comment out JWT imports to resolve import errors
-# from rest_framework_simplejwt.views import TokenRefreshView
+from rest_framework_simplejwt.views import TokenRefreshView
 
 from . import views
-from .views import (
-    # Existing views
+from .api_views import (
+    TextSimilarityView,
+    KeywordExtractionView,
+    SentimentAnalysisView,
+    EngagementAnalysisView,
+    AdaptiveLearningView,
     TextToSpeechView,
+    HealthCheckView,
+)
+
+# Import existing views
+from .views import (
     SpeechToTextView,
     FaceDetectionView,
     GestureRecognitionView,
     ContentModerationView,
-    
-    # Adaptive learning views
     LearningPathView,
     LearningAnalyticsView,
     LessonRecommendationView,
     UpdateLearningProfileView,
     track_lesson_completion,
     AssessmentView,
+    EngagementAnalyticsView,
+    PerformanceAnalyticsView,
+    CompletionAnalyticsView,
 )
 
 # API Router
 router = DefaultRouter()
 
-# Text-to-Speech Endpoints
-tts_patterns = [
-    path('convert/', TextToSpeechView.as_view(), name='tts_convert'),
-    path('voices/', TextToSpeechView.as_view(), name='tts_voices'),
-    path('settings/', TextToSpeechView.as_view(), name='tts_settings'),
+# ===== API Endpoint Groups =====
+
+# Text Analysis Endpoints
+text_analysis_patterns = [
+    path('similarity/', TextSimilarityView.as_view(), name='text_similarity'),
+    path('keywords/', KeywordExtractionView.as_view(), name='extract_keywords'),
+    path('sentiment/', SentimentAnalysisView.as_view(), name='analyze_sentiment'),
 ]
 
-# Speech-to-Text Endpoints
-stt_patterns = [
-    path('transcribe/', SpeechToTextView.as_view(), name='stt_transcribe'),
-    path('languages/', SpeechToTextView.as_view(), name='stt_languages'),
+# Speech Processing Endpoints
+speech_patterns = [
+    # Text-to-Speech
+    path('tts/convert/', TextToSpeechView.as_view(), name='tts_convert'),
+    path('tts/voices/', TextToSpeechView.as_view(), name='tts_voices'),
+    
+    # Speech-to-Text
+    path('stt/transcribe/', SpeechToTextView.as_view(), name='stt_transcribe'),
+    path('stt/languages/', SpeechToTextView.as_view(), name='stt_languages'),
+    
+    # Speech Settings
+    path('tts/settings/', TextToSpeechView.as_view(), name='tts_settings'),
 ]
 
 # Computer Vision Endpoints
 cv_patterns = [
+    # Face and Emotion Detection
     path('face-detection/', FaceDetectionView.as_view(), name='face_detection'),
-    path('gesture-recognition/', GestureRecognitionView.as_view(), name='gesture_recognition'),
     path('emotion-detection/', FaceDetectionView.as_view(), name='emotion_detection'),
+    
+    # Gesture Recognition
+    path('gesture-recognition/', GestureRecognitionView.as_view(), name='gesture_recognition'),
+    
+    # Engagement Analysis
+    path('engagement/', EngagementAnalysisView.as_view(), name='engagement_analysis'),
 ]
 
-# Content Moderation
+# Content Moderation Endpoints
 moderation_patterns = [
     path('text/', ContentModerationView.as_view(), name='moderate_text'),
     path('image/', ContentModerationView.as_view(), name='moderate_image'),
@@ -55,12 +86,21 @@ moderation_patterns = [
 
 # Adaptive Learning Endpoints
 adaptive_learning_patterns = [
-    # Learning path and progress
-    path('learning-path/', LearningPathView.as_view(), name='learning_path'),
+    # Learning Path
+    path('path/', LearningPathView.as_view(), name='learning_path'),
+    
+    # Analytics
     path('analytics/', LearningAnalyticsView.as_view(), name='learning_analytics'),
+    
+    # Recommendations
     path('recommendations/', LessonRecommendationView.as_view(), name='lesson_recommendations'),
-    path('update-profile/', UpdateLearningProfileView.as_view(), name='update_learning_profile'),
-    path('track-lesson/', track_lesson_completion, name='track_lesson_completion'),
+    
+    # User Profile
+    path('profile/update/', UpdateLearningProfileView.as_view(), name='update_learning_profile'),
+    
+    # Lesson Tracking
+    path('track/complete/<int:lesson_id>/', track_lesson_completion, name='track_lesson_completion'),
+    path('track/lesson/', track_lesson_completion, name='track_lesson_completion_alt'),
     
     # Assessments
     path('assessments/', AssessmentView.as_view(), name='assessments_list'),
@@ -68,55 +108,46 @@ adaptive_learning_patterns = [
     path('assessments/submit/', AssessmentView.as_view(), name='submit_assessment'),
 ]
 
-# Recommendation System - Temporarily commented out to resolve import errors
-# recommendation_patterns = [
-#     path('assessments/', RecommendationView.as_view(), name='recommend_assessments'),
-#     path('resources/', RecommendationView.as_view(), name='recommend_resources'),
-# ]
+# Analytics Endpoints
+analytics_patterns = [
+    path('engagement/', EngagementAnalyticsView.as_view(), name='engagement_analytics'),
+    path('performance/', PerformanceAnalyticsView.as_view(), name='performance_analytics'),
+    path('completion/', CompletionAnalyticsView.as_view(), name='completion_analytics'),
+]
 
-# URL Patterns
+# ===== Root URL Patterns =====
 urlpatterns = [
-    # Include router URLs
+    # API Documentation
     path('', include(router.urls)),
     
-    # Authentication
-    # Temporarily comment out JWT token refresh URL
-    # path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    # API Documentation (Swagger/OpenAPI)
+    path('docs/', include_docs_urls(
+        title='SmartLearn AI API',
+        description='AI services for SmartLearn Neuro',
+        public=True
+    ), name='api-docs'),
     
-    # Text-to-Speech
-    path('tts/', include(tts_patterns)),
-    
-    # Speech-to-Text
-    path('stt/', include(stt_patterns)),
-    
-    # Computer Vision
-    path('vision/', include(cv_patterns)),
-    
-    # Content Moderation
-    path('moderation/', include(moderation_patterns)),
-    
-    # Adaptive Learning System
-    path('learning/', include(adaptive_learning_patterns)),
-    
-    # Recommendation System - Temporarily commented out
-    # path('recommend/', include(recommendation_patterns)),
-    
-    # API Documentation
-    path('docs/', include_docs_urls(title='SmartLearn Neuro API')),
-    
-    # API Schema
+    # API Schema (OpenAPI)
     path('schema/', get_schema_view(
-        title="SmartLearn Neuro API",
-        description="API for SmartLearn Neuro - Adaptive Learning Platform",
+        title="SmartLearn AI API",
+        description="AI services for SmartLearn Neuro",
         version="1.0.0"
     ), name='openapi-schema'),
-    # Analytics Endpoints
-    path('analytics/', include([
-        path('engagement/', views.EngagementAnalyticsView.as_view(), name='engagement_analytics'),
-        path('performance/', views.PerformanceAnalyticsView.as_view(), name='performance_analytics'),
-        path('completion/', views.CompletionAnalyticsView.as_view(), name='completion_analytics'),
-    ])),
     
-    # Add a catch-all for the API root
+    # Authentication
+    path('auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    
+    # Health Check
+    path('health/', HealthCheckView.as_view(), name='health_check'),
+    
+    # API Endpoints
+    path('text/', include((text_analysis_patterns, 'text'), namespace='text')),
+    path('speech/', include((speech_patterns, 'speech'), namespace='speech')),
+    path('vision/', include((cv_patterns, 'vision'), namespace='vision')),
+    path('moderation/', include((moderation_patterns, 'moderation'), namespace='moderation')),
+    path('learning/', include((adaptive_learning_patterns, 'learning'), namespace='learning')),
+    path('analytics/', include((analytics_patterns, 'analytics'), namespace='analytics')),
+    
+    # API Root
     path('', views.api_root, name='api_root'),
 ]
